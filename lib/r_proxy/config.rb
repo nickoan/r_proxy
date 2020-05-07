@@ -34,10 +34,17 @@ module RProxy
     add_config(:host, '0.0.0.0')
     add_config(:port, 8081)
 
+    add_config(:logger)
+
     add_config(:callback_url)
     add_config(:usage_threshold, 1 * 1024 * 1024 * 1024)
 
-    add_config(:enable_ssl, true)
+    add_config(:disable_auth, false)
+
+    # e.g "redis://:p4ssw0rd@10.0.1.1:6380/15"
+    add_exception_config(:redis_url)
+
+    add_config(:enable_ssl?, true)
     add_exception_config(:ssl_private_key)
     add_exception_config(:ssl_cert)
 
