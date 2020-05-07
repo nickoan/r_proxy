@@ -6,6 +6,11 @@ module RProxy
       @redis = RProxy::RedisService.instance(@config.redis_url)
       @http_parser = HttpProxyParser.new(@redis)
       @disable_auth = @config.disable_auth
+      @disable_unbind_cb = @config.disable_unbind_cb
+      @buffer_size = @config.proxy_buffer
+      @username = nil
+      @password = nil
+      @target_connection = nil
     end
 
     def post_init
@@ -34,14 +39,30 @@ module RProxy
       begin
         target_host, target_port = @http_parser.parse(data, !@disable_auth)
 
-        # TODO add target connection
+        @target_connection = EventMachine.
+          connect(target_host,
+                  target_port,
+                  RProxy::TargetConnection,
+                  self,
+                  !@disable_unbind_cb,
+                  @buffer_size)
 
+        if !@disable_auth
+          @username = @http_parser.username
+          @password = @http_parser.password
+          @target_connection.assign_user_and_password(@username, @password)
+        end
       rescue RProxy::HTTPAuthFailed
         send_data(RProxy::Constants::HTTP_FAILED_AUTH)
         close_connection_after_writing
       rescue RProxy::HTTPNotSupport
         send_data(RProxy::Constants::HTTP_BAD_REQUEST)
         close_connection_after_writing
+      rescue => e
+        if @logger
+          @logger.error("id:#{@ip}, #{e.message}")
+        end
+        close_connection
       end
     end
 

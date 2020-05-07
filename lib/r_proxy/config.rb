@@ -38,8 +38,10 @@ module RProxy
 
     add_config(:callback_url)
     add_config(:usage_threshold, 1 * 1024 * 1024 * 1024)
+    add_config(:proxy_buffer, 1024 * 1024 * 10) # default is 10M
 
     add_config(:disable_auth, false)
+    add_config(:disable_unbind_cb, false)
 
     # e.g "redis://:p4ssw0rd@10.0.1.1:6380/15"
     add_exception_config(:redis_url)

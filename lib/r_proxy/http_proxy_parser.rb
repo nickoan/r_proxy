@@ -3,6 +3,8 @@ require 'base64'
 module RProxy
   class HttpProxyParser
 
+    attr_reader :username, :password
+
     def initialize(redis)
       @redis = redis
       @max_connection_size = 4 * 1024
