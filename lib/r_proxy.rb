@@ -4,4 +4,5 @@ require 'redis'
 
 module RProxy
   class Error < StandardError; end
+  class EmptyConfigError < Error; end
 end
