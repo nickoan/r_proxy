@@ -1,10 +1,11 @@
 module RProxy
   class TargetConnection < EM::Connection
 
-    def initialize(client, enable_cb, buffer_size)
-      @enable_unbind_callback = enable_cb
+    def initialize(client, disable_cb, buffer_size, unbind)
+      @disable_unbind_callback = disable_cb
       @client_connection = client
       @buffer_size = buffer_size
+      @unbind_service = unbind
     end
 
     def assign_user_and_password(username, password)
@@ -12,8 +13,8 @@ module RProxy
       @password = password
     end
 
-    def assign_redis(redis)
-      @redis = redis
+    def assign_callback_url(url)
+      @cb_url = url
     end
 
     def connection_completed
@@ -25,11 +26,8 @@ module RProxy
     end
 
     def unbind
-      return if @redis.nil?
-      usage = get_proxied_bytes
-      key = "proxy:#{@username}-#{@password}"
-      left = @redis.decrby(key,usage)
-      left
+      return if @disable_unbind_callback
+      @unbind_service.call(@username, @password, get_proxied_bytes)
     end
 
     private

@@ -8,9 +8,12 @@ module RProxy
       @disable_auth = @config.disable_auth
       @disable_unbind_cb = @config.disable_unbind_cb
       @buffer_size = @config.proxy_buffer
+      @callback_url = @config.callback_url
       @username = nil
       @password = nil
       @target_connection = nil
+
+      @unbind_service = UnbindService.new(config, @redis)
     end
 
     def post_init
@@ -44,13 +47,18 @@ module RProxy
                   target_port,
                   RProxy::TargetConnection,
                   self,
-                  !@disable_unbind_cb,
-                  @buffer_size)
+                  @disable_unbind_cb,
+                  @buffer_size,
+                  @unbind_service)
 
         if !@disable_auth
           @username = @http_parser.username
           @password = @http_parser.password
           @target_connection.assign_user_and_password(@username, @password)
+        end
+
+        if !@disable_unbind_cb
+          @target_connection.assign_callback_url(@callback_url)
         end
       rescue RProxy::HTTPAuthFailed
         send_data(RProxy::Constants::HTTP_FAILED_AUTH)
@@ -68,6 +76,11 @@ module RProxy
 
     def proxy_target_unbound
       close_connection
+    end
+
+    def unbind
+      return if @disable_unbind_cb
+      @unbind_service.call(@username, @password, get_proxied_bytes)
     end
   end
 end
