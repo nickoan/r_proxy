@@ -2,7 +2,7 @@
 
 a powerful ruby http proxy server, base on eventmachine
 
-able to run in multi-process like nginx works
+able to run in multi-process like nginx workers
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -79,5 +79,5 @@ server.run!
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/r_proxy.
+Bug reports and pull requests are welcome on GitHub at https://github.com/nickoan/r_proxy.
 
