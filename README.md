@@ -1,7 +1,8 @@
 # RProxy
 
-ruby http proxy server, base on eventmachine
+a powerful ruby http proxy server, base on eventmachine
 
+able to run in multi-process like nginx works
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -42,6 +43,12 @@ server = RProxy::MasterProcess.new
 
 server.set(:host, '127.0.0.1')
 server.set(:port, 8080)
+
+# set how many instances process that you want to run.
+# master process will looking after those process,
+# if any of them exit, will auto re-create new instance.
+# if want to quit all, just kill master process.
+server.set(:instances, 3)
 
 # if disable_auth is true
 # then server will not auth user and password

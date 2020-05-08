@@ -5,6 +5,7 @@ server = RProxy::MasterProcess.new
 server.set(:host, '127.0.0.1')
 server.set(:port, 8080)
 
+server.set(:instances, 3)
 
 server.set(:disable_auth, true)
 # server.set(:disable_unbind_cb, true)

@@ -15,6 +15,7 @@ module RProxy
     end
 
     def run!
+      at_exit { stop_all_process }
       @logger = @config.logger
       begin
         start_r_proxy
@@ -25,8 +26,6 @@ module RProxy
         @logger.info("master process exit with #{e.message}, #{e.backtrace}") if @logger
         EventMachine.stop_event_loop if EventMachine.reactor_running?
       end
-
-      at_exit { stop_all_process }
     end
 
     private
