@@ -24,11 +24,16 @@ Http and Https proxy server
 
 integrated with Redis, if you enable auth then you must provide redis url
 to let server connect to redis.
+
 e.g: `server.set(:callback_url,'http://127.0.0.1:1234')`
 
 redis key rule: `proxy:username-password`
+
 redis value rule: `integer string` e.g: `1234567`
-the value describe how many bytes that user can use. `unit: bytes`
+
+the value describe how many bytes that user can use. 
+
+`unit: bytes`
 
 ```ruby
 require 'r_proxy'
