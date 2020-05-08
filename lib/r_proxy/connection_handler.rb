@@ -64,7 +64,7 @@ module RProxy
         close_connection_after_writing
       rescue => e
         if @logger
-          @logger.error("client: id:#{@ip}, #{e.message}")
+          @logger.error("client: id:#{@ip}, #{e.message}, #{e.backtrace}")
         end
         close_connection
       end

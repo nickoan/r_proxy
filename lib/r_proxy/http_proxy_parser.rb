@@ -20,10 +20,11 @@ module RProxy
     private
 
     def auth_user
-      temp = @header['proxy-authorization']
-      pattern = /^Basic /
-      token = temp.gsub(pattern, '')
       begin
+        temp = @headers['proxy-authorization']
+        raise RProxy::HTTPNotSupport if temp.nil?
+        pattern = /^Basic /
+        token = temp.gsub(pattern, '')
         str = Base64.decode64(token)
         @username, @password = str.split(':')
       rescue
@@ -46,13 +47,13 @@ module RProxy
     end
 
     def parse_header(arr)
-      header = {}
+      headers = {}
       arr.each do |val|
         name, value = val.split(':')
         next if name.nil?
-        header[name.strip.downcase] = value&.strip
+        headers[name.strip.downcase] = value&.strip
       end
-      header
+      headers
     end
 
     def parse_connect_target(data)
