@@ -8,7 +8,7 @@ module RProxy
     def run!
       Signal.trap("TERM") { exit! }
       EventMachine.run do
-        EventMachine.attach_server(server, RProxy::ConnectionHandler, @config)
+        EventMachine.attach_server(@sock, RProxy::ConnectionHandler, @config)
       end
     end
   end

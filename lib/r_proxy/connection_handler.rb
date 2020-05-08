@@ -18,7 +18,7 @@ module RProxy
 
     def post_init
       begin
-        if @config.enable_ssl?
+        if @config.enable_ssl
           start_tls(
             private_key_file: @config.ssl_private_key,
             cert_chain_file: @config.ssl_cert
@@ -50,7 +50,7 @@ module RProxy
                   @disable_unbind_cb,
                   @buffer_size,
                   @unbind_service)
-
+        @target_connection.assign_logger(@logger)
         if !@disable_auth
           @username = @http_parser.username
           @password = @http_parser.password
@@ -64,7 +64,7 @@ module RProxy
         close_connection_after_writing
       rescue => e
         if @logger
-          @logger.error("id:#{@ip}, #{e.message}")
+          @logger.error("client: id:#{@ip}, #{e.message}")
         end
         close_connection
       end

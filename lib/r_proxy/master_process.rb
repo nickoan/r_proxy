@@ -7,20 +7,24 @@ module RProxy
 
     def initialize
       @config = RProxy::Config.new
-      @logger = @config.logger
       @pids = []
     end
 
+    def set(name, value)
+      @config.send("#{name}=", value)
+    end
+
     def run!
+      @logger = @config.logger
       begin
         start_r_proxy
       rescue Interrupt
         @logger.info('existing all process....') if @logger
-        EventMachine.stop_event_loop
+        EventMachine.stop_event_loop if EventMachine.reactor_running?
+        stop_all_process
       rescue => e
-        @logger.log("master process exit with #{e.message}") if @logger
-        EventMachine.stop_event_loop
-      ensure
+        @logger.info("master process exit with #{e.message}") if @logger
+        EventMachine.stop_event_loop if EventMachine.reactor_running?
         stop_all_process
       end
     end
@@ -38,22 +42,21 @@ module RProxy
 
       instance_amount = @config.instances
       server = TCPServer.new(@config.host, @config.port)
-
       @pids << instance_amount.times do
         timestamp = Time.now.to_i
         Process.fork do
           begin
-            @logger.info("r_proxy @#{i} process start....") if @logger
+            @logger.info("r_proxy @#{timestamp} process start....") if @logger
             RProxy::ProxyServer.new(server, @config).run!
           rescue Interrupt
             @logger.info("r_proxy TPC server instance @#{timestamp} closed now....") if @logger
           rescue => e
-            @logger.error("instance @#{timestamp}, error: #{e.message}")
+            @logger.error("instance @#{timestamp}, error: #{e.message}") if @logger
             exit!(false)
           end
         end
       end
-
+      EventMachine.kqueue=(true)
       EventMachine.run do
         @pids.each do |pid|
           EventMachine.watch_process(pid,

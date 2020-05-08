@@ -4,7 +4,7 @@ module RProxy
       def add_config(name, default_value = nil)
         self.define_method("#{name}") do
           store = instance_variable_get('@store')
-          store["#{name}"] || default_value
+          store["#{name}"].nil? ? default_value : store["#{name}"]
         end
 
         define_set_config_value_method(name)
@@ -46,7 +46,7 @@ module RProxy
     # e.g "redis://:p4ssw0rd@10.0.1.1:6380/15"
     add_exception_config(:redis_url)
 
-    add_config(:enable_ssl?, true)
+    add_config(:enable_ssl, true)
     add_exception_config(:ssl_private_key)
     add_exception_config(:ssl_cert)
 

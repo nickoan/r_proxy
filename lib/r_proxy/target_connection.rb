@@ -8,6 +8,10 @@ module RProxy
       @unbind_service = unbind
     end
 
+    def assign_logger(logger)
+      @logger = logger
+    end
+
     def assign_user_and_password(username, password)
       @username = username
       @password = password
@@ -29,9 +33,14 @@ module RProxy
     private
 
     def response_proxy_connect_ready
-      @client_connection.send_data(RProxy::Constants::HTTP_SUCCESS)
-      @client_connection.proxy_incoming_to(self, @buffer_size)
-      proxy_incoming_to(@client_connection, @buffer_size)
+      begin
+        @client_connection.send_data(RProxy::Constants::HTTP_SUCCESS)
+        @client_connection.proxy_incoming_to(self, @buffer_size)
+        proxy_incoming_to(@client_connection, @buffer_size)
+      rescue => e
+        port, ip = Socket.unpack_sockaddr_in(get_peername)
+        @logger.error("target ip: #{ip}, port: #{port}, #{e.message}") if @logger
+      end
     end
   end
 end

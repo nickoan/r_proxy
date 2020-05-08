@@ -1,3 +1,4 @@
+require 'logger'
 require 'r_proxy/version'
 require 'eventmachine'
 require 'redis'
@@ -27,3 +28,18 @@ module RProxy
   class HTTPNotSupport < Error; end
   class HTTPAuthFailed < Error; end
 end
+
+server = RProxy::MasterProcess.new
+
+server.set(:host, '127.0.0.1')
+server.set(:port, 8080)
+
+
+server.set(:disable_auth, true)
+server.set(:disable_unbind_cb, true)
+server.set(:enable_ssl, false)
+
+server.set(:redis_url, "redis://@localhost:6379/1")
+
+server.set(:logger, Logger.new('./debug.log'))
+server.run!

@@ -2,6 +2,7 @@ module RProxy
   class UnbindService
 
     def initialize(config, redis)
+      @config = config
       @cb_url = config.callback_url
       @redis = redis
       @usage_threshold = @config.usage_threshold
