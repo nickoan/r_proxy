@@ -56,10 +56,6 @@ module RProxy
           @password = @http_parser.password
           @target_connection.assign_user_and_password(@username, @password)
         end
-
-        if !@disable_unbind_cb
-          @target_connection.assign_callback_url(@callback_url)
-        end
       rescue RProxy::HTTPAuthFailed
         send_data(RProxy::Constants::HTTP_FAILED_AUTH)
         close_connection_after_writing

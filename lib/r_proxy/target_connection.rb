@@ -13,10 +13,6 @@ module RProxy
       @password = password
     end
 
-    def assign_callback_url(url)
-      @cb_url = url
-    end
-
     def connection_completed
       response_proxy_connect_ready
     end
