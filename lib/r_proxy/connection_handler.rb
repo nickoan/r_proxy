@@ -15,6 +15,7 @@ module RProxy
 
       @unbind_service = UnbindService.new(config, @redis)
       @snapshot_service = RProxy::CheckSnapshotService.new(@redis, @config)
+      @enable_force_quit = config.enable_force_quit
     end
 
     def post_init
@@ -27,9 +28,11 @@ module RProxy
         end
         @port, @ip = Socket.unpack_sockaddr_in(get_peername)
 
-        @timer = EventMachine.add_timer(20) do
-          self.close_connection(false)
-          @timer = nil
+        if @enable_force_quit
+          @timer = EventMachine.add_timer(20) do
+            self.close_connection(false)
+            @timer = nil
+          end
         end
       rescue => e
         if @logger
@@ -79,6 +82,9 @@ module RProxy
     end
 
     def unbind
+      if @timer
+        EventMachine.cancel_timer(@timer)
+      end
       return if @disable_unbind_cb
       @unbind_service.call(@username, @password, get_proxied_bytes)
     end
