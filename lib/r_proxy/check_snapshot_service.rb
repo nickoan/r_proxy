@@ -6,6 +6,7 @@ module RProxy
       @snapshot_expire_in = 15 * 60
       @usage_threshold = config.usage_threshold
       @cb_url = config.callback_url
+      @logger = config.logger
     end
 
     def call(user, pass, result)
@@ -19,7 +20,8 @@ module RProxy
         tmp = snapshot_value.to_i - result.to_i
 
         if tmp >= @usage_threshold
-          RProxy::CallbackService.call(@cb_url, user, pass, tmp)
+          connection = RProxy::CallbackService.call(@cb_url, user, pass, tmp)
+          connection.assign_logger(@logger)
           @redis.setex(s_key, @snapshot_expire_in, result)
         end
       end
