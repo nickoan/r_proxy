@@ -25,7 +25,7 @@ Http and Https proxy server
 integrated with Redis, if you enable auth then you must provide redis url
 to let server connect to redis.
 
-e.g: `server.set(:callback_url,'http://127.0.0.1:1234')`
+e.g: `server.set(:redis_url, "redis://@localhost:6379/1")`
 
 redis key rule: `proxy:username-password`
 
