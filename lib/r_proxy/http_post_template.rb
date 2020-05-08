@@ -14,6 +14,7 @@ module RProxy
         user: user,
         pass: pass,
         value: value,
+        timestamp: Time.now.getutc.to_i
       }.to_json
 
       @headers['Content-Length'] = body.bytesize
@@ -35,7 +36,7 @@ module RProxy
 
     def init_headers
       {
-        'User-Agent' => "RSocks/#{RSocks::VERSION}",
+        'User-Agent' => "RSocks/#{RProxy::VERSION}",
         'Content-Type' => 'application/json',
       }
     end

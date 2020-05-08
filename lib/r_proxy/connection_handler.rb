@@ -14,6 +14,7 @@ module RProxy
       @target_connection = nil
 
       @unbind_service = UnbindService.new(config, @redis)
+      @snapshot_service = RProxy::CheckSnapshotService.new(@redis, @config)
     end
 
     def post_init
@@ -40,7 +41,7 @@ module RProxy
 
     def receive_data(data)
       begin
-        target_host, target_port = @http_parser.parse(data, !@disable_auth)
+        target_host, target_port, remain = @http_parser.parse(data, !@disable_auth)
 
         @target_connection = EventMachine.
           connect(target_host,
@@ -55,6 +56,9 @@ module RProxy
           @username = @http_parser.username
           @password = @http_parser.password
           @target_connection.assign_user_and_password(@username, @password)
+
+          # check snapshot
+          @snapshot_service.call(@username, @password, remain)
         end
       rescue RProxy::HTTPAuthFailed
         send_data(RProxy::Constants::HTTP_FAILED_AUTH)

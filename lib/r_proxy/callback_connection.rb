@@ -1,5 +1,5 @@
 module RProxy
-  class CallbackConnection
+  class CallbackConnection < EM::Connection
     def initialize(route, user, pass, value, tls)
       @http_request = RProxy::HttpPostTemplate.
         new(route).
@@ -11,18 +11,20 @@ module RProxy
     def connection_completed
       start_tls if @need_tls
       set_comm_inactivity_timeout(20)
+      send_data(@http_request)
     end
 
     def receive_data(data)
-      @response += data
+      @response = data
+      close_connection
     end
 
     def ssl_handshake_completed
       send_data(@http_request)
     end
 
-    def unbind
-      puts @response
-    end
+    # def unbind
+    #   puts @response
+    # end
   end
 end

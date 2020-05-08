@@ -4,6 +4,7 @@ require 'eventmachine'
 require 'redis'
 require 'r_proxy/config'
 require 'r_proxy/constants'
+require 'r_proxy/check_snapshot_service'
 require 'r_proxy/http_proxy_parser'
 require 'r_proxy/redis_service'
 

@@ -4,6 +4,7 @@ module RProxy
       uri = URI(url)
       tls = uri.scheme == 'https'
       path = uri.path.empty? ? '/' : uri.path
+
       EventMachine.connect(
         uri.host,
         uri.port,

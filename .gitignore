@@ -7,3 +7,7 @@
 /spec/reports/
 /tmp/
 .idea
+server_cert.txt
+server_key.txt
+debug.log
+test_server.rb

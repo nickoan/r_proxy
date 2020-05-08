@@ -12,9 +12,10 @@ module RProxy
 
     def parse(data, need_auth)
       parse_connect_request(data)
-      auth_user if need_auth
+      remain = 0
+      remain = auth_user if need_auth
 
-      [@schema.host, @schema.port]
+      [@schema.host, @schema.port, remain]
     end
 
     private
