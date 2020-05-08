@@ -10,6 +10,7 @@ module RProxy
     end
 
     def process_exited
+
       @pids.delete(@id)
       timestamp = Time.now.to_i
 
@@ -20,16 +21,20 @@ module RProxy
         rescue Interrupt
           @logger.info("r_proxy TPC server instance @#{timestamp} closed now....") if @logger
         rescue => e
-          @logger.error("instance @#{timestamp}, error: #{e.message}") if @logger
+          @logger.error("instance @#{timestamp}, error: #{e.message}, #{e.backtrace}") if @logger
           exit(false)
         end
       end
+
+      Process.detach(pid)
+      @pids << pid
 
       EventMachine.watch_process(pid, RProxy::ProcessHandler,
                                  @pids,
                                  @config,
                                  @socket,
                                  pid)
+      close_connection
     end
   end
 end
