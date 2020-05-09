@@ -12,12 +12,11 @@ module RProxy
     def process_exited
 
       @pids.delete(@id)
-      timestamp = Time.now.to_i
-
       pid = Process.fork do
+        timestamp = (Time.now.to_f * 1000).round
         begin
           @logger.info("r_proxy rebuild new instance replace @#{timestamp}....") if @logger
-          RProxy::ProxyServer.new(@socket, @config).run!
+          RProxy::ProxyServer.new(@socket, @config, timestamp).run!
         rescue Interrupt
           @logger.info("r_proxy TPC server instance @#{timestamp} closed now....") if @logger
         rescue => e
