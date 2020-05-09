@@ -21,7 +21,7 @@ Or install it yourself as:
 
 ## Usage
 
-##### Currently only support `BSD` and `MacOS`
+##### Currently only support `BSD`, `Linux` and `MacOS`
 
 Http and Https proxy server
 
