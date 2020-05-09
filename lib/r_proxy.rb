@@ -11,7 +11,6 @@ require 'r_proxy/http_proxy_parser'
 require 'r_proxy/redis_service'
 
 require 'r_proxy/master_process'
-require 'r_proxy/process_handler'
 
 require 'r_proxy/target_connection'
 require 'r_proxy/connection_handler'
