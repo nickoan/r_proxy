@@ -60,7 +60,9 @@ module RProxy
         sleep(0.1)
       end
 
-      EventMachine.kqueue=(true)
+      if EventMachine.kqueue?
+        EventMachine.kqueue=(true)
+      end
       EventMachine.run do
         @pids.each do |pid|
           EventMachine.watch_process(pid,
