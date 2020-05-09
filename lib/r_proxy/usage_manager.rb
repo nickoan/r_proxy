@@ -40,7 +40,7 @@ module RProxy
       if cache.nil?
         value = @redis.get(key)
 
-        return value if value.to_i <= @no_cache_below
+        return value if !value.nil? && value.to_i <= @no_cache_below
 
         @cache_pool[key] = {
           usage: value,
