@@ -40,6 +40,10 @@ module RProxy
     add_config(:usage_threshold, 1 * 1024 * 1024 * 1024)
     add_config(:proxy_buffer, 1024 * 1024 * 10) # default is 10M
 
+    add_config(:enable_cache, true)
+    add_config(:cache_clear_threshold, 200)
+    add_config(:no_cache_below, 500 * 1024 * 1024)
+
     add_config(:enable_force_quit, true)
 
     add_config(:disable_auth, false)

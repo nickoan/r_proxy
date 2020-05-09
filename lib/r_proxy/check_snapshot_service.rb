@@ -20,9 +20,13 @@ module RProxy
         tmp = snapshot_value.to_i - result.to_i
 
         if tmp >= @usage_threshold
-          connection = RProxy::CallbackService.call(@cb_url, user, pass, tmp)
-          connection.assign_logger(@logger)
-          @redis.setex(s_key, @snapshot_expire_in, result)
+          begin
+            connection = RProxy::CallbackService.call(@cb_url, user, pass, tmp)
+            connection.assign_logger(@logger)
+            @redis.setex(s_key, @snapshot_expire_in, result)
+          rescue => e
+            @logger.error("callback service: @id:#{s_key}, #{e.message}") if @logger
+          end
         end
       end
     end

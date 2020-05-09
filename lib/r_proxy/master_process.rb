@@ -42,11 +42,11 @@ module RProxy
       instance_amount = @config.instances
       server = TCPServer.new(@config.host, @config.port)
       instance_amount.times do
-        timestamp = Time.now.to_i
         pid =  Process.fork do
+          timestamp = (Time.now.to_f * 1000).round
           begin
             @logger.info("r_proxy @#{timestamp} process start....") if @logger
-            RProxy::ProxyServer.new(server, @config).run!
+            RProxy::ProxyServer.new(server, @config, timestamp).run!
           rescue Interrupt
             @logger.info("r_proxy TPC server instance @#{timestamp} closed now....") if @logger
           rescue => e
@@ -57,6 +57,7 @@ module RProxy
 
         Process.detach(pid)
         @pids << pid
+        sleep(0.1)
       end
 
       EventMachine.kqueue=(true)

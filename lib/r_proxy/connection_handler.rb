@@ -1,10 +1,9 @@
 module RProxy
   class ConnectionHandler < EM::Connection
-    def initialize(config)
+    def initialize(config, cache_pool)
       @config = config
       @logger = @config.logger
       @redis = RProxy::RedisService.instance(@config.redis_url)
-      @http_parser = HttpProxyParser.new(@redis)
       @disable_auth = @config.disable_auth
       @disable_unbind_cb = @config.disable_unbind_cb
       @buffer_size = @config.proxy_buffer
@@ -12,8 +11,9 @@ module RProxy
       @username = nil
       @password = nil
       @target_connection = nil
-
-      @unbind_service = UnbindService.new(config, @redis)
+      @cache_pool = cache_pool
+      @usage_manager = RProxy::UsageManager.new(config, @cache_pool, @redis)
+      @http_parser = HttpProxyParser.new(@usage_manager)
       @snapshot_service = RProxy::CheckSnapshotService.new(@redis, @config)
       @enable_force_quit = config.enable_force_quit
     end
@@ -53,7 +53,7 @@ module RProxy
                   self,
                   @disable_unbind_cb,
                   @buffer_size,
-                  @unbind_service)
+                  @usage_manager)
         @target_connection.assign_logger(@logger)
         if !@disable_auth
           @username = @http_parser.username
@@ -86,7 +86,7 @@ module RProxy
         EventMachine.cancel_timer(@timer)
       end
       return if @disable_unbind_cb
-      @unbind_service.call(@username, @password, get_proxied_bytes)
+      @usage_manager.report_usage(@username, @password, get_proxied_bytes)
     end
   end
 end

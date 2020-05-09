@@ -5,8 +5,8 @@ module RProxy
 
     attr_reader :username, :password
 
-    def initialize(redis)
-      @redis = redis
+    def initialize(usage_manager)
+      @usage_manager = usage_manager
       @max_connection_size = 4 * 1024
     end
 
@@ -31,11 +31,10 @@ module RProxy
       rescue
         raise RProxy::HTTPNotSupport, "token parse failed #{token}"
       end
-      key = "proxy:#{@username}-#{@password}"
-      value = @redis.get(key)
 
-      raise RProxy::HTTPAuthFailed if value.nil?
-      value
+      auth_result = @usage_manager.auth_user(@username, @password)
+      raise RProxy::HTTPAuthFailed if auth_result.nil?
+      auth_result
     end
 
     def parse_connect_request(data)
