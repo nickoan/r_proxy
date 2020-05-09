@@ -21,6 +21,8 @@ Or install it yourself as:
 
 ## Usage
 
+##### Currently only support `BSD` and `MacOS`
+
 Http and Https proxy server
 
 integrated with Redis, if you enable auth then you must provide redis url
