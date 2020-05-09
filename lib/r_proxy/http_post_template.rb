@@ -36,7 +36,7 @@ module RProxy
 
     def init_headers
       {
-        'User-Agent' => "RSocks/#{RProxy::VERSION}",
+        'User-Agent' => "RProxy/#{RProxy::VERSION}",
         'Content-Type' => 'application/json',
       }
     end
