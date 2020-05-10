@@ -11,6 +11,8 @@ module RProxy
 
     def call(user, pass, result)
 
+      return if user.nil? ||  pass.nil? || result.nil?
+
       s_key = "proxy:#{user}-#{pass}:snapshot"
       snapshot_value = @redis.get(s_key)
 
