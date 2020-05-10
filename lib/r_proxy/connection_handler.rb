@@ -43,7 +43,7 @@ module RProxy
 
     def receive_data(data)
       begin
-        target_host, target_port, remain = @http_parser.parse(data, !@disable_auth)
+        target_host, target_port, _= @http_parser.parse(data, !@disable_auth)
 
         @target_connection = EventMachine.
           connect(target_host,
@@ -67,7 +67,7 @@ module RProxy
         close_connection_after_writing
       rescue => e
         if @logger
-          @logger.error("client: id:#{@ip}, #{e.message}, #{e.backtrace}")
+          @logger.error("client: #{@ip}, target: #{target_host}, port: #{target_port}, #{e.message}")
         end
         close_connection
       end
