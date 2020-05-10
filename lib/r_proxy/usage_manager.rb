@@ -5,12 +5,11 @@ module RProxy
       @cache_pool = cache_pool
       @redis = redis
       @no_cache_below = config.no_cache_below
+      @check_snapshot_service = RProxy::CheckSnapshotService.new(@redis, config)
     end
 
     def auth_user(user, pass)
-      key = proxy_key(user, pass)
-
-      value = fetch_usage(key)
+      value = fetch_usage(user, pass)
 
       return value if !value.nil? && value.to_i > 0
       nil
@@ -32,15 +31,23 @@ module RProxy
 
     private
 
-    def fetch_usage(key)
-      return @redis.get(key) if !@enable_cache || !@cache_pool.writable?
+    def fetch_usage(user, pass)
+      key = proxy_key(user, pass)
+      if !@enable_cache || !@cache_pool.writable?
+        value = @redis.get(key)
+        @check_snapshot_service.call(user, pass, value)
+      end
 
       cache = @cache_pool[key]
 
       if cache.nil?
+
         value = @redis.get(key)
 
-        return value if !value.nil? && value.to_i <= @no_cache_below
+        if !value.nil?
+          @check_snapshot_service.call(user, pass, value)
+          return value if value.to_i <= @no_cache_below
+        end
 
         @cache_pool[key] = {
           usage: value,

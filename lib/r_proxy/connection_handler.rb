@@ -14,7 +14,6 @@ module RProxy
       @cache_pool = cache_pool
       @usage_manager = RProxy::UsageManager.new(config, @cache_pool, @redis)
       @http_parser = HttpProxyParser.new(@usage_manager)
-      @snapshot_service = RProxy::CheckSnapshotService.new(@redis, @config)
       @enable_force_quit = config.enable_force_quit
     end
 
@@ -59,9 +58,6 @@ module RProxy
           @username = @http_parser.username
           @password = @http_parser.password
           @target_connection.assign_user_and_password(@username, @password)
-
-          # check snapshot
-          @snapshot_service.call(@username, @password, remain)
         end
       rescue RProxy::HTTPAuthFailed
         send_data(RProxy::Constants::HTTP_FAILED_AUTH)
