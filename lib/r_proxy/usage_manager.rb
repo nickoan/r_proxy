@@ -33,9 +33,13 @@ module RProxy
 
     def fetch_usage(user, pass)
       key = proxy_key(user, pass)
+
       if !@enable_cache || !@cache_pool.writable?
+
         value = @redis.get(key)
         @check_snapshot_service.call(user, pass, value)
+
+        return value
       end
 
       cache = @cache_pool[key]
