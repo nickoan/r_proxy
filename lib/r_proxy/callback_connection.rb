@@ -14,19 +14,22 @@ module RProxy
       @logger = logger
     end
 
-    def connection_completed
+    def post_init
       start_tls if @need_tls
       set_comm_inactivity_timeout(20)
+    end
+
+    def ssl_handshake_completed
       send_data(@http_request)
+    end
+
+    def connection_completed
+      send_data(@http_request) if !@need_tls
     end
 
     def receive_data(data)
       @response = data.split("\r\n")[0]
       close_connection
-    end
-
-    def ssl_handshake_completed
-      send_data(@http_request)
     end
 
     def unbind

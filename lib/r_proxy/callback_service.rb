@@ -4,7 +4,6 @@ module RProxy
       return if url.nil? || url.empty?
       uri = URI(url)
       tls = uri.scheme == 'https'
-
       EventMachine.connect(
         uri.host,
         uri.port,

@@ -39,7 +39,7 @@ module RProxy
         next unless pid
         Process.kill("TERM", pid)
       end
-      @watchers.each { |t| t.join }
+      sleep(1)
       @logger.info('all process exited....') if @logger
     end
 
