@@ -4,8 +4,7 @@ module RProxy
       @uri = uri
       @path = uri.path.empty? ? '/' : uri.path
       @http_request = RProxy::HttpPostTemplate.
-        new(@path).
-        create(user, pass, value)
+        new(@uri, @path).create(user, pass, value)
       @response = ''
       @need_tls = tls
     end

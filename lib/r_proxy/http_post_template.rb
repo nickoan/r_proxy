@@ -3,10 +3,12 @@ require 'json'
 module RProxy
   class HttpPostTemplate
 
-    def initialize(route)
-      @route = route
+    def initialize(uri, path)
+      @route = path
+      @protocol = "POST #{@route} HTTP/1.1"
+      @host = uri.host
+      @port = uri.port
       @headers = init_headers
-      @protocol = "POST #{route} HTTP/1.1"
     end
 
     def create(user, pass, value)
@@ -21,7 +23,7 @@ module RProxy
 
       headers_str = header_to_s
 
-      "#{@protocol}\r\n#{headers_str}\r\n#{body}"
+      "#{@protocol}\r\n#{headers_str}\r\n#{body}\r\n"
     end
 
     private
@@ -38,6 +40,9 @@ module RProxy
       {
         'User-Agent' => "RProxy/#{RProxy::VERSION}",
         'Content-Type' => 'application/json',
+        'Accept' => '*/*',
+        'cache-control' => 'no-cache',
+        'host' => "#{@host}:#{@port}"
       }
     end
   end
